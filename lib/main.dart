@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
+
+import 'Quiz_Brain.dart';
 
 void main() => runApp(Quizzler());
 
@@ -8,7 +11,15 @@ class Quizzler extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Quizzler',
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.blueGrey,
+        ),
         backgroundColor: Colors.grey.shade900,
         body: SafeArea(
           child: Padding(
@@ -28,16 +39,23 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Widget> scoreKeeper = [];
-  List<String> questionBank = [
-    'You can lead a cow down stairs but not up stairs.',
-    'Approximately one quarter of human bones are in the feet.',
-    'A slug\'s blood is green.'
-  ];
+
+//  List<bool> questionsAnswer = [false, true, true];
+//
+//  List<String> questionBank = [
+//    'You can lead a cow down stairs but not up stairs.',
+//    'Approximately one quarter of human bones are in the feet.',
+//    'A slug\'s blood is green.'
+//  ];
+//
+//  Questions q1 = Questions(q: '', a: false);
 
   int getNewQuestion() {
     int ran = Random().nextInt(2);
     return ran;
   }
+
+  QuizBrain brain = QuizBrain();
 
   int currentQuestionNum = 0;
 
@@ -53,7 +71,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                questionBank[currentQuestionNum],
+                brain.questionList[currentQuestionNum].questionText,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -77,17 +95,24 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+                bool correctAnswer =
+                    brain.questionList[currentQuestionNum].questionAnswer;
                 //The user picked true.
+                if (correctAnswer &&
+                    currentQuestionNum < brain.questionList.length - 1) {
+                  print("Right Answer");
+                  scoreKeeper.add(Icon(
+                    Icons.check,
+                    color: Colors.green,
+                  ));
+                } else {
+                  print("wrong!!!");
+                  scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+                }
                 setState(() {
-                  if (currentQuestionNum < 2 && scoreKeeper.length < 10) {
+                  print(brain.questionList.length);
+                  if (currentQuestionNum < brain.questionList.length - 1) {
                     currentQuestionNum++;
-                    scoreKeeper.add(Icon(
-                      Icons.check,
-                      color: Colors.green,
-                    ));
-                  } else {
-                    Scaffold.of(context).showSnackBar(
-                        new SnackBar(content: new Text("End of List Reached")));
                   }
                 });
               },
@@ -108,20 +133,29 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
+                bool correctAnswer =
+                    brain.questionList[currentQuestionNum].questionAnswer;
+                if (!correctAnswer &&
+                    currentQuestionNum < brain.questionList.length - 1) {
+                  print("Right Answer");
+                  scoreKeeper.add(Icon(Icons.check, color: Colors.green));
+                } else {
+                  print("wrong!!!");
+                  scoreKeeper.add(Icon(
+                    Icons.close,
+                    color: Colors.red,
+                  ));
+                }
                 setState(() {
-                  if (currentQuestionNum < 2 && scoreKeeper.length < 10) {
+                  if (currentQuestionNum < brain.questionList.length - 1) {
                     currentQuestionNum++;
-                    scoreKeeper.add(Icon(
-                      Icons.close,
-                      color: Colors.red,
-                    ));
                   }
                 });
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        //TODO: Stop the Row to get increase.
         Row(
           children: scoreKeeper,
         )
