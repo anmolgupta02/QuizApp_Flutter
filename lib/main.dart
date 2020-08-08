@@ -50,6 +50,25 @@ class _QuizPageState extends State<QuizPage> {
 //
 //  Questions q1 = Questions(q: '', a: false);
 
+  void checkAnswer(bool userPickedAnswer) {
+    setState(() {
+      bool correctAnswer = brain.getQuestionAnswers();
+      //The user picked true.
+      if (correctAnswer == userPickedAnswer) {
+        print("Right Answer");
+        scoreKeeper.add(Icon(
+          Icons.check,
+          color: Colors.green,
+        ));
+      } else {
+        print("wrong!!!");
+        scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+      }
+
+      brain.updateCurrentQuestion();
+    });
+  }
+
   int getNewQuestion() {
     int ran = Random().nextInt(2);
     return ran;
@@ -93,21 +112,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer = brain.getQuestionAnswers();
-                //The user picked true.
-                if (correctAnswer) {
-                  print("Right Answer");
-                  scoreKeeper.add(Icon(
-                    Icons.check,
-                    color: Colors.green,
-                  ));
-                } else {
-                  print("wrong!!!");
-                  scoreKeeper.add(Icon(Icons.close, color: Colors.red));
-                }
-                setState(() {
-                  brain.updateCurrentQuestion();
-                });
+                checkAnswer(true);
               },
             ),
           ),
@@ -126,20 +131,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
-                bool correctAnswer = brain.getQuestionAnswers();
-                if (!correctAnswer) {
-                  print("Right Answer");
-                  scoreKeeper.add(Icon(Icons.check, color: Colors.green));
-                } else {
-                  print("wrong!!!");
-                  scoreKeeper.add(Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ));
-                }
-                setState(() {
-                  brain.updateCurrentQuestion();
-                });
+                checkAnswer(false);
               },
             ),
           ),
