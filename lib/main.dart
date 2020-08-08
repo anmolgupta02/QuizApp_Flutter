@@ -57,8 +57,6 @@ class _QuizPageState extends State<QuizPage> {
 
   QuizBrain brain = QuizBrain();
 
-  int currentQuestionNum = 0;
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -71,7 +69,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                brain.questionList[currentQuestionNum].questionText,
+                brain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -95,11 +93,9 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                bool correctAnswer =
-                    brain.questionList[currentQuestionNum].questionAnswer;
+                bool correctAnswer = brain.getQuestionAnswers();
                 //The user picked true.
-                if (correctAnswer &&
-                    currentQuestionNum < brain.questionList.length - 1) {
+                if (correctAnswer) {
                   print("Right Answer");
                   scoreKeeper.add(Icon(
                     Icons.check,
@@ -110,10 +106,7 @@ class _QuizPageState extends State<QuizPage> {
                   scoreKeeper.add(Icon(Icons.close, color: Colors.red));
                 }
                 setState(() {
-                  print(brain.questionList.length);
-                  if (currentQuestionNum < brain.questionList.length - 1) {
-                    currentQuestionNum++;
-                  }
+                  brain.updateCurrentQuestion();
                 });
               },
             ),
@@ -133,10 +126,8 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
-                bool correctAnswer =
-                    brain.questionList[currentQuestionNum].questionAnswer;
-                if (!correctAnswer &&
-                    currentQuestionNum < brain.questionList.length - 1) {
+                bool correctAnswer = brain.getQuestionAnswers();
+                if (!correctAnswer) {
                   print("Right Answer");
                   scoreKeeper.add(Icon(Icons.check, color: Colors.green));
                 } else {
@@ -147,9 +138,7 @@ class _QuizPageState extends State<QuizPage> {
                   ));
                 }
                 setState(() {
-                  if (currentQuestionNum < brain.questionList.length - 1) {
-                    currentQuestionNum++;
-                  }
+                  brain.updateCurrentQuestion();
                 });
               },
             ),
@@ -163,9 +152,3 @@ class _QuizPageState extends State<QuizPage> {
     );
   }
 }
-
-/*
- 'You can lead a cow down stairs but not up stairs.', false,
- 'Approximately one quarter of human bones are in the feet.', true,
- 'A slug\'s blood is green.', true,
-*/
