@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 import 'Quiz_Brain.dart';
 
@@ -50,19 +51,33 @@ class _QuizPageState extends State<QuizPage> {
 //
 //  Questions q1 = Questions(q: '', a: false);
 
+  int correctAnswerCount = 0;
   void checkAnswer(bool userPickedAnswer) {
     setState(() {
       bool correctAnswer = brain.getQuestionAnswers();
       //The user picked true.
-      if (correctAnswer == userPickedAnswer) {
-        print("Right Answer");
-        scoreKeeper.add(Icon(
-          Icons.check,
-          color: Colors.green,
-        ));
+      if (!isFinished(brain.getCurrentNum())) {
+        if (correctAnswer == userPickedAnswer) {
+          correctAnswerCount++;
+          print("Right Answer and correct answer count is $correctAnswerCount");
+          scoreKeeper.add(Icon(
+            Icons.check,
+            color: Colors.green,
+          ));
+        } else {
+          print("wrong!!!");
+          scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+        }
       } else {
-        print("wrong!!!");
-        scoreKeeper.add(Icon(Icons.close, color: Colors.red));
+        Alert(
+          context: context,
+          title: 'FINISHED',
+          desc:
+              'You have reached end of Quiz. Your total score was $correctAnswerCount',
+        ).show();
+        brain.setCurrentQuestion(0);
+        scoreKeeper.clear();
+        correctAnswerCount = 0;
       }
 
       brain.updateCurrentQuestion();
@@ -73,6 +88,15 @@ class _QuizPageState extends State<QuizPage> {
     int ran = Random().nextInt(2);
     return ran;
   }
+
+  bool isFinished(int currentQuestion) {
+    if (brain.getCurrentNum() == brain.getQuestionBankLength() - 1) {
+      return true;
+    }
+    else
+      return false;
+  }
+
 
   QuizBrain brain = QuizBrain();
 

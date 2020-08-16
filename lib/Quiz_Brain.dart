@@ -52,4 +52,7 @@ class QuizBrain {
     return _currentQuestion;
   }
 
+  void setCurrentQuestion(int newCurrentQuestion) {
+    _currentQuestion = newCurrentQuestion;
+  }
 }
